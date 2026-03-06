@@ -22,8 +22,7 @@ import com.admin.api.model.FeesSummary;
 import com.admin.api.response.ApiResponse;
 import com.admin.api.service.FeesPaymentService;
 
-
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin("http://localhost:5173/")
 @RestController
 @RequestMapping("/payment")
 public class FeesPaymentController {

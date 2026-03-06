@@ -28,13 +28,11 @@ public class StudentRequest {
 
     @NotBlank(message = "Mode of training is required")
     private String modeOfTraining;
-
-    // @NotBlank(message = "Course number is required")
-    // private String courseId;
     
     @NotBlank(message = "programtype is required")
 	private String programType;
     
+    @NotBlank(message = "Course name is required")
     @Size(min = 2, max = 100, message = "Course name must be between 2 and 100 characters")
     private String courseName;
     

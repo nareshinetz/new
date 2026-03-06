@@ -82,8 +82,6 @@ public class Student {
     @JsonManagedReference
     private StudentFees studentFees;
     
-
-    
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "batch_id")

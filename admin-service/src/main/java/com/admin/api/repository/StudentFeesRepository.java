@@ -15,10 +15,7 @@ public interface StudentFeesRepository  extends JpaRepository<StudentFees, Long>
 
 	@Query("SELECT sf FROM StudentFees sf WHERE sf.student.id = :studentId")
 	Optional<StudentFees> findByStudentId(@Param("studentId") String studentId);
-	
-	
 
-   
 
 
 

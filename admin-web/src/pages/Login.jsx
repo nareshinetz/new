@@ -12,54 +12,45 @@ import { setAuth } from "../redux/slices/authSlice";
 
 const Login = () => {
   const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [msg, setMsg] = useState('');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
-  if (!validateEmail(email)) {
-    setMsg(LOGIN_MSG.INVALID_EMAIL);
-    return;
-  }
+    if (!validateEmail(username)) {
+      setMsg(LOGIN_MSG.INVALID_EMAIL);
+      return;
+    }
 
-  try {
-    const res = await axios.post(`${BASE_URL}/login`, {
-      email,
-      password,
-    });
+    try {
+      const res = await axios.post(`${BASE_URL}/api/auth/login`, {
+        username: username,
+        password,
+      });
 
-    const user = res.data;
+      const user = res.data.data;
 
-    dispatch(
-      setAuth({
-        user: {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          permissions: {
-            studentManagement: user.studentManagement,
-            staffManagement: user.staffManagement,
-            priceManagement: user.priceManagement,
-            leadManagement: user.leadManagement,
-            generateCertificate: user.generateCertificate,
+      dispatch(
+        setAuth({
+          user: {
+            username,
+            role: user.role,
           },
-        },
-        token: user.token, // use real token from backend
-      })
-    );
+          token: user.token,
+        })
+      );
 
-    setMsg(LOGIN_MSG.SUCCESS);
-    navigate("/dashboard");
+      setMsg(LOGIN_MSG.SUCCESS);
+      navigate("/dashboard");
 
-  } catch (error) {
-    console.error(error);
-    setMsg(LOGIN_MSG.INVALID_CREDENTIALS);
-    setPassword("");
-  }
-};
-
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      setMsg(LOGIN_MSG.INVALID_CREDENTIALS);
+      setPassword("");
+    }
+  };
   return (
     <Box
       sx={{
@@ -85,11 +76,11 @@ const Login = () => {
       }}>
         <TextField
           id="Email-input"
-          label="E-Mail"
-          type="email"
+          label="Username"
+          type="username"
           variant="outlined"
           required
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <TextField
@@ -107,7 +98,7 @@ const Login = () => {
           variant="contained"
           color="primary"
           onClick={handleLogin}
-          disabled={!email || !password}
+          disabled={!username || !password}
           sx={{ mt: 2 }}
         >
           Login

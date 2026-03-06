@@ -19,7 +19,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import DownloadDropdown from "../generic/DropDown";
+const DownloadDropdown = React.lazy(()=>import( "../generic/DropDown"))
+import AddStudent from "./AddStudent";
 
 
 const TransactionHistory = () => {
@@ -153,6 +154,7 @@ const TransactionHistory = () => {
       <Card>
         <CardContent>
           <Box display="flex" justifyContent="right" mb={2} flexWrap="wrap" gap={3} >
+                      <Suspense fallback={<div>Loading...</div>}>
                       <DownloadDropdown
                         data={transactions}
                         columns={downloadColumns}
@@ -160,6 +162,7 @@ const TransactionHistory = () => {
                         sheetName="Transaction"
                         title="TRANSACTION HISTORY REPORT"
                       />
+                      </Suspense>
                       <Button
                         variant="contained"
                         color="primary"

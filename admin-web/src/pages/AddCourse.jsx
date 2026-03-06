@@ -22,16 +22,12 @@ import {
   fetchCourseById,
 } from "../redux/slices/courseSlice";
 
-const instructorOptions = [
-  "John Doe",
-  "Vijay Kumar",
-  "Priya Sharma",
-  "Raj Patel",
-];
 
 const initialState = {
   courseName: "",
   price: "",
+  domainCode : "",
+  programType : "",
 };
 
 const AddCourse = () => {
@@ -62,6 +58,8 @@ const AddCourse = () => {
       setFormData({
         courseName: selectedCourse.courseName || "",
         price: selectedCourse.price || "",
+        domainCode : selectedCourse.domainCode || "",
+        programType : selectedCourse.programType || "",
       });
     }
   }, [selectedCourse, isEditMode]);
@@ -114,6 +112,8 @@ const handleSubmit = async (e) => {
   const payload = {
     courseName: formData.courseName.trim(),
     price: Number(formData.price),
+    domainCode : formData.domainCode,
+    programType : formData.programType,
   };
 
   console.log("Sending payload:", payload);
@@ -182,6 +182,30 @@ const handleSubmit = async (e) => {
                   />
                 </Grid>
               ))}
+
+              <Grid item xs={12} md={4} sx={{ width: '30%' }}>
+                <TextField
+                  label="Domain Code"
+                  name="domainCode"
+                  type="text"
+                  fullWidth
+                  value={formData.domainCode}
+                  onChange={handleChange}
+                  error={formErrors.domainCode}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={4} sx={{ width: '30%' }}>
+                <TextField
+                  label="Program Type"
+                  name="programType"
+                  type="text"
+                  fullWidth
+                  value={formData.programType}
+                  onChange={handleChange}
+                  error={formErrors.ProgramType}
+                />
+              </Grid>
 
               <Grid item xs={12} md={4} sx={{ width: '30%' }}>
                 <TextField

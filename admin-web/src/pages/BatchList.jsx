@@ -12,7 +12,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CommonAgGrid from "../generic/AgGridTable";
 import { fetchBatches, deleteBatch } from "../redux/slices/batchSlice";
 
@@ -26,6 +26,11 @@ const BatchList = () => {
   useEffect(() => {
     dispatch(fetchBatches());
   }, [dispatch]);
+
+  const handleView = useCallback(
+      (id) => navigate(`/batch/view/${id}`),
+      [navigate]
+    );
 
   const handleEdit = useCallback(
     (id) => {
@@ -47,8 +52,22 @@ const BatchList = () => {
     () => [
       {
         headerName: "Batch ID",
-        field: "batchName",
-        flex: 1,
+        field: "batchId",
+        cellRenderer: (params) => (
+          <Link
+            component="button"
+            underline="none"
+            sx={{
+              textDecoration: "underline",
+              textUnderlineOffset: "3px",
+              textDecorationThickness: "1.5px",
+              fontWeight: 500,
+            }}
+            onClick={() => handleView(params.value)}
+          >
+            {params.value}
+          </Link>
+        ),
       },
       {
         headerName: "Room",
@@ -66,6 +85,21 @@ const BatchList = () => {
         headerName: "Status",
         field: "status",
       },
+        {
+      headerName: "Students",
+      width: 150,
+      cellRenderer: (params) => (
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={() =>
+            navigate(`/batches/${params.data.batchId}/students`)
+          }
+        >
+          View
+        </Button>
+      ),
+    },
       {
         headerName: "Actions",
         width: 140,

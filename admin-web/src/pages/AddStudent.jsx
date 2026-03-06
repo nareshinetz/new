@@ -128,7 +128,6 @@ const AddStudent = () => {
     modeOfTraining: "",
     courseName: "",
     collegeName: "",
-    courseNumber: "",
     degree: "",
     department: "",
     cityName: "",
@@ -178,7 +177,6 @@ const AddStudent = () => {
   const [errors, setErrors] = useState({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  // dropdown options
   const programOptions = ["Internship", "Course"];
   const modeOptions = ["Online", "Offline"];
   const timingOptions = ["8am-9am", "9am-10am", "10am-11am", "2pm-3pm"];
