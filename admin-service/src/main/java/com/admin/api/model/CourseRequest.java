@@ -9,7 +9,18 @@ import lombok.Data;
 @Data
 public class CourseRequest {
 
-	 private String courseName;
+    @NotBlank(message = "Course name must not be empty")
+    @Size(min = 3, max = 100)
+    private String courseName;
 
-	    private Double price;
+    @NotNull(message = "Price is required")
+    @Positive(message = "Price must be greater than 0")
+    private Double price;
+
+    @NotBlank(message = "Domain code is required")
+    private String domainCode;
+
+    @NotBlank(message = "ProgramType is required")
+    @Size(min = 3, max = 20)
+    private String programType;
 }

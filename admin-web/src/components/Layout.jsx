@@ -558,6 +558,23 @@ const Layout = () => {
               </ListItemIcon>
               <ListItemText primary="Batch List" />
             </ListItemButton>
+              <ListItemButton
+              sx={{
+                pl: 4,
+                "&.Mui-selected": {
+                  backgroundColor: alpha("#ffffff", 0.2),
+                  "& .MuiListItemIcon-root": { color: "#ffffff" },
+                },
+                "&:hover": { backgroundColor: alpha("#ffffff", 0.1) },
+              }}
+              selected={isActive("/batch/scheduler")}
+              onClick={() => navigate("/batch/scheduler")}
+            >
+              <ListItemIcon sx={{ color: "inherit" }}>
+                <ListIcon />
+              </ListItemIcon>
+              <ListItemText primary="Batch Scheduler" />
+            </ListItemButton>
 
 
 

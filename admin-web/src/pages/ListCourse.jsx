@@ -15,8 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses, deleteCourse } from "../redux/slices/courseSlice";
 import AgGridTable from "../generic/AgGridTable";
 import { useNavigate } from "react-router-dom";
-import DownloadDropdown from "../generic/DropDown";
-import { Breadcrumbs, Link } from "@mui/material";
+const DownloadDropdown = React.lazy(()=>import( "../generic/DropDown"))
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
 
@@ -137,6 +136,7 @@ const ListCourses = () => {
           </Typography>
 
           <Box display="flex" gap={2}>
+            <Suspense fallback={<div>Loading...</div>}>
             <DownloadDropdown
               data={courses}
               columns={downloadColumns}
@@ -144,6 +144,7 @@ const ListCourses = () => {
               sheetName="Courses"
               title="COURSES REPORT"
             />
+            </Suspense>
 
             <Button
               variant="contained"

@@ -22,7 +22,6 @@ import com.admin.api.service.StudentService;
 
 import jakarta.transaction.Transactional;
 
-
 @Service
 @Transactional
 public class StudentServiceImp implements StudentService {
@@ -35,7 +34,7 @@ public class StudentServiceImp implements StudentService {
 
     @Autowired
     private StudentFeesRepository feesRepo;
-    
+
     @Autowired
     private BatchRepository batchRepository;
 
@@ -52,35 +51,53 @@ public class StudentServiceImp implements StudentService {
         if (studentRepository.existsByPhoneNumber(request.getPhoneNumber()))
             throw new RuntimeException("Phone already exists");
 
-        // 2️⃣ Get Course
-        Course course = courseRepo.findByCourseName(request.getCourseName())
+        // 2️⃣ Validate ProgramType provided
+        if (request.getProgramType() == null || request.getProgramType().isEmpty())
+            throw new RuntimeException("ProgramType must be provided");
+
+        // 3️⃣ Check Course exists
+        Course courseByName = courseRepo
+                .findByCourseName(request.getCourseName())
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
-        // 3️⃣ Get Batch (DIRECT Long – no conversion)
+        // 4️⃣ Check ProgramType exists for that course
+        Course course = courseRepo
+                .findByCourseNameAndProgramType(
+                        request.getCourseName(),
+                        request.getProgramType())
+                .orElseThrow(() -> new RuntimeException("ProgramType not found for this course"));
+
+        // 5️⃣ Get Batch
         Batch batch = batchRepository.findById(request.getBatchId())
                 .orElseThrow(() -> new RuntimeException("Batch not found"));
 
-        // 4️⃣ Generate Student ID
+        // 6️⃣ Generate Student ID
+
+        // First letter of programType
+        String programCode = request.getProgramType()
+                .substring(0, 1)
+                .toUpperCase();
+
+        // Count students based on course + programType
         long count = studentRepository
                 .countByProgramTypeAndCourse_CourseName(
                         request.getProgramType(),
                         request.getCourseName()) + 1;
 
         String studentId = "I"
-                + getProgramCode(request.getProgramType())
-                + getDomainCode(request.getCourseName())
+                + programCode
+                + course.getDomainCode().toUpperCase()
                 + String.format("%04d", count);
 
-        // 5️⃣ Map Student & set relations
+        // 7️⃣ Map Student & Set Relations
         Student student = mapper.map(request, Student.class);
         student.setId(studentId);
         student.setCourse(course);
-        student.setBatch(batch);   // ⭐ THIS LINE STORES batch_id
+        student.setBatch(batch);
 
-        // 6️⃣ Save Student
         Student savedStudent = studentRepository.save(student);
 
-        // 7️⃣ Fees Calculation
+        // 8️⃣ Fees Calculation
         Double totalFees = course.getPrice();
         Double discount = request.getDiscount() == null ? 0.0 : request.getDiscount();
 
@@ -89,7 +106,7 @@ public class StudentServiceImp implements StudentService {
 
         Double actualFees = totalFees - discount;
 
-        // 8️⃣ Create StudentFees
+        // 9️⃣ Create StudentFees
         StudentFees fees = new StudentFees();
         fees.setStudent(savedStudent);
         fees.setTotalFees(totalFees);
@@ -103,76 +120,58 @@ public class StudentServiceImp implements StudentService {
         return savedStudent;
     }
 
-	@Override
-	public Optional<Student> getStudentById(String id) {
-		return studentRepository.findById(id);
-	}
+    @Override
+    public Optional<Student> getStudentById(String id) {
+        return studentRepository.findById(id);
+    }
 
-	@Override
-	public Student updateStudentById(String id, StudentRequest request) {
+    @Override
+    public Student updateStudentById(String id, StudentRequest request) {
 
-	    Student student = studentRepository.findById(id)
-	            .orElseThrow(() -> new RuntimeException("Student not found"));
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
 
-	    Course course = courseRepo.findByCourseName(request.getCourseName())
-	            .orElseThrow(() -> new RuntimeException("Course not found"));
+        // Check Course exists
+        courseRepo.findByCourseName(request.getCourseName())
+                .orElseThrow(() -> new RuntimeException("Course not found"));
 
-	    Batch batch = batchRepository.findById(request.getBatchId())
-	            .orElseThrow(() -> new RuntimeException("Batch not found"));
+        // Check ProgramType exists for that course
+        Course course = courseRepo
+                .findByCourseNameAndProgramType(
+                        request.getCourseName(),
+                        request.getProgramType())
+                .orElseThrow(() -> new RuntimeException("ProgramType not found for this course"));
 
-	    // Save existing ID before mapping
-	    String existingId = student.getId();
+        Batch batch = batchRepository.findById(request.getBatchId())
+                .orElseThrow(() -> new RuntimeException("Batch not found"));
 
-	    mapper.map(request, student);
+        String existingId = student.getId();
 
-	    // Restore ID after mapping
-	    student.setId(existingId);
+        mapper.map(request, student);
 
-	    student.setCourse(course);
-	    student.setBatch(batch);
+        student.setId(existingId);
+        student.setCourse(course);
+        student.setBatch(batch);
 
-	    return studentRepository.save(student);
-	}
+        return studentRepository.save(student);
+    }
 
-	@Override
-	public boolean deleteStudentById(String id) {
-		if (!studentRepository.existsById(id))
-			return false;
-		studentRepository.deleteById(id);
-		return true;
-	}
+    @Override
+    public boolean deleteStudentById(String id) {
+        if (!studentRepository.existsById(id))
+            return false;
 
-	@Override
-	public Page<Student> getAllStudents(int page, int size) {
-		return studentRepository.findAll(PageRequest.of(page - 1, size));
-	}
+        studentRepository.deleteById(id);
+        return true;
+    }
 
-	// searching
-	@Override
-	public List<Student> searchByName(String name) {
-		return studentRepository.findByStudentNameContainingIgnoreCase(name);
-	}
+    @Override
+    public Page<Student> getAllStudents(int page, int size) {
+        return studentRepository.findAll(PageRequest.of(page - 1, size));
+    }
 
-	private String getProgramCode(String type) {
-		if (type.equalsIgnoreCase("course"))
-			return "C";
-		if (type.equalsIgnoreCase("internship"))
-			return "I";
-		if (type.equalsIgnoreCase("project"))
-			return "P";
-		return "X";
-	}
-
-	private String getDomainCode(String name) {
-		if (name.equalsIgnoreCase("java full stack"))
-			return "JF";
-		if (name.equalsIgnoreCase("python full stack"))
-			return "PY";
-		if (name.equalsIgnoreCase("data science"))
-			return "DS";
-		if (name.equalsIgnoreCase("mern stack"))
-			return "MS";
-		return "GN";
-	}
-
-}    
+    @Override
+    public List<Student> searchByName(String name) {
+        return studentRepository.findByStudentNameContainingIgnoreCase(name);
+    }
+}

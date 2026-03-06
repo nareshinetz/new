@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useCallback, Suspense } from "react";
 import {
   Box,
   Typography,
@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
-import DownloadDropdown from "../generic/DropDown";
+const DownloadDropdown = React.lazy(()=>import( "../generic/DropDown"))
 
 const ListStudents = () => {
   const dispatch = useDispatch();
@@ -174,6 +174,7 @@ const ListStudents = () => {
             sx={{ width: 280 }}
           />
           <Box display="flex" gap={2}>
+            <Suspense fallback={<div>Loading...</div>}>
             <DownloadDropdown
               data={students}
               columns={downloadColumns}
@@ -181,6 +182,7 @@ const ListStudents = () => {
               sheetName="Students"
               title="STUDENTS LIST REPORT"
             />
+            </Suspense>
             <Button
               variant="contained"
               color="primary"
