@@ -23,11 +23,13 @@ import {
 } from "../redux/slices/courseSlice";
 
 
+const programOptions = ["COURSE", "INTERNSHIP"];
+
 const initialState = {
   courseName: "",
   price: "",
-  domainCode : "",
-  programType : "",
+  domainCode: "",
+  programType: "",
 };
 
 const AddCourse = () => {
@@ -58,8 +60,8 @@ const AddCourse = () => {
       setFormData({
         courseName: selectedCourse.courseName || "",
         price: selectedCourse.price || "",
-        domainCode : selectedCourse.domainCode || "",
-        programType : selectedCourse.programType || "",
+        domainCode: selectedCourse.domainCode || "",
+        programType: selectedCourse.programType || "",
       });
     }
   }, [selectedCourse, isEditMode]);
@@ -80,59 +82,59 @@ const AddCourse = () => {
   };
 
   /* ================= VALIDATION ================= */
- const validateForm = () => {
-  const errors = {};
+  const validateForm = () => {
+    const errors = {};
 
-  if (!formData.courseName.trim()) {
-    errors.courseName = "Course name is required";
-  }
-
-  if (formData.price === "") {
-    errors.price = "Course fee is required";
-  } else if (isNaN(formData.price)) {
-    errors.price = "Fee must be a number";
-  } else if (Number(formData.price) <= 0) {
-    errors.price = "Fee must be greater than 0";
-  }
-
-  setFormErrors(errors);
-
-  console.log("Validation Errors:", errors);
-
-  return Object.keys(errors).length === 0;
-};
-
-  /* ================= SUBMIT ================= */
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log("Submit clicked");
-
-  if (!validateForm()) return;
-
-  const payload = {
-    courseName: formData.courseName.trim(),
-    price: Number(formData.price),
-    domainCode : formData.domainCode,
-    programType : formData.programType,
-  };
-
-  console.log("Sending payload:", payload);
-
-  try {
-    if (isEditMode) {
-      await dispatch(editCourse({ id, ...payload })).unwrap();
-    } else {
-      await dispatch(addCourse(payload)).unwrap();
+    if (!formData.courseName.trim()) {
+      errors.courseName = "Course name is required";
     }
 
-    console.log("API Success");
-    setSuccess(true);
+    if (formData.price === "") {
+      errors.price = "Course fee is required";
+    } else if (isNaN(formData.price)) {
+      errors.price = "Fee must be a number";
+    } else if (Number(formData.price) <= 0) {
+      errors.price = "Fee must be greater than 0";
+    }
 
-    setTimeout(() => navigate("/courses/list"), 1200);
-  } catch (err) {
-    console.error("API Error:", err);
-  }
-};
+    setFormErrors(errors);
+
+    console.log("Validation Errors:", errors);
+
+    return Object.keys(errors).length === 0;
+  };
+
+  /* ================= SUBMIT ================= */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submit clicked");
+
+    if (!validateForm()) return;
+
+    const payload = {
+      courseName: formData.courseName.trim(),
+      price: Number(formData.price),
+      domainCode: formData.domainCode,
+      programType: formData.programType,
+    };
+
+    console.log("Sending payload:", payload);
+
+    try {
+      if (isEditMode) {
+        await dispatch(editCourse({ id, ...payload })).unwrap();
+      } else {
+        await dispatch(addCourse(payload)).unwrap();
+      }
+
+      console.log("API Success");
+      setSuccess(true);
+
+      setTimeout(() => navigate("/courses/list"), 1200);
+    } catch (err) {
+      console.error("API Error:", err);
+    }
+  };
   /* ================= LOADING ================= */
   if (loading) {
     return (
@@ -197,14 +199,17 @@ const handleSubmit = async (e) => {
 
               <Grid item xs={12} md={4} sx={{ width: '30%' }}>
                 <TextField
+                  select
                   label="Program Type"
                   name="programType"
-                  type="text"
                   fullWidth
                   value={formData.programType}
                   onChange={handleChange}
-                  error={formErrors.ProgramType}
-                />
+                >
+                  {programOptions.map((opt) => (
+                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                  ))}
+                </TextField>
               </Grid>
 
               <Grid item xs={12} md={4} sx={{ width: '30%' }}>

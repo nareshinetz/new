@@ -8,15 +8,22 @@ export const fetchTransactions = createAsyncThunk(
   "transactions/fetch",
   async ({ page = 1, size = 10 } = {}) => {
     const res = await axios.get(`${API_URL}/all?page=${page}&size=${size}`);
-    // Map paymentId → id for AgGrid table actions
-    return res.data.data.content.map((t) => ({
-      ...t,
-      id: t.paymentId,              // important for table actions
-      totalFees: t.totalFees || "-",  // default if missing
-      pendingAmount: t.pendingAmount || "-", // default if missing
-      status: t.status || "Completed",
-      paymentMode: t.paymentMode || "-",
-    }));
+
+    const data = res.data.data;
+
+    return {
+      transactions: data.content.map((t) => ({
+        ...t,
+        id: t.paymentId,
+        totalFees: t.totalFees || "-",
+        pendingAmount: t.pendingAmount || "-",
+        status: t.status || "Completed",
+        paymentMode: t.paymentMode || "-",
+      })),
+      totalPages: data.totalPages,
+      totalElements: data.totalElements,
+      page: data.number,
+    };
   }
 );
 
@@ -111,6 +118,10 @@ const transactionSlice = createSlice({
 
     loading: false,
     error: null,
+
+    page: 0,
+    totalPages: 0,
+    totalElements: 0
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -122,7 +133,10 @@ const transactionSlice = createSlice({
       })
       .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.loading = false;
-        state.transactions = action.payload;
+        state.transactions = action.payload.transactions;
+        state.page = action.payload.page;
+        state.totalPages = action.payload.totalPages;
+        state.totalElements = action.payload.totalElements;
       })
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.loading = false;
@@ -142,37 +156,37 @@ const transactionSlice = createSlice({
       })
 
       .addCase(fetchStudentTransactions.pending, (state) => {
-  state.loading = true;
-})
-.addCase(fetchStudentTransactions.fulfilled, (state, action) => {
-  state.loading = false;
-  state.studentTransactions = action.payload;
-})
-.addCase(fetchStudentTransactions.rejected, (state, action) => {
-  state.loading = false;
-  state.error = action.payload || action.error.message;
-})
+        state.loading = true;
+      })
+      .addCase(fetchStudentTransactions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.studentTransactions = action.payload;
+      })
+      .addCase(fetchStudentTransactions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
 
       /* ADD */
       .addCase(addTransaction.pending, (state) => {
         state.loading = true;
       })
-    .addCase(addTransaction.fulfilled, (state, action) => {
-      state.loading = false;
-      state.transactions.push(action.payload);
-    })
-    .addCase(addTransaction.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload || action.error.message;
-    })
+      .addCase(addTransaction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactions.push(action.payload);
+      })
+      .addCase(addTransaction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
 
-    /* DELETE */
-    .addCase(deleteTransaction.fulfilled, (state, action) => {
-      state.transactions = state.transactions.filter(
-        (t) => String(t.id) !== String(action.payload)
-      );
-    });
-},
+      /* DELETE */
+      .addCase(deleteTransaction.fulfilled, (state, action) => {
+        state.transactions = state.transactions.filter(
+          (t) => String(t.id) !== String(action.payload)
+        );
+      });
+  },
 });
 
 export default transactionSlice.reducer;

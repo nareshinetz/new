@@ -5,7 +5,9 @@ import { myTheme } from "./AgGridTheme";
 const AgGridTable = ({
   rowData = [],
   columnDefs = [],
+  totalRows = 0,
   loadingMessage = "Loading data...",
+  onPaginationChanged
 }) => {
 
   const rows = Array.isArray(rowData) ? rowData : [];
@@ -38,6 +40,7 @@ const AgGridTable = ({
         headerHeight={56}
         animateRows={true}
         domLayout="normal"
+        onPaginationChanged={onPaginationChanged}
         
       />
     </div>

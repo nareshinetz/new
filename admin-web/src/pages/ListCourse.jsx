@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { Suspense, useEffect, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -16,6 +16,10 @@ import { fetchCourses, deleteCourse } from "../redux/slices/courseSlice";
 import AgGridTable from "../generic/AgGridTable";
 import { useNavigate } from "react-router-dom";
 const DownloadDropdown = React.lazy(()=>import( "../generic/DropDown"))
+import { ModuleRegistry } from "ag-grid-community";
+import { AllCommunityModule } from "ag-grid-community";
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
 
@@ -55,6 +59,18 @@ const ListCourses = () => {
         field: "courseName",
         flex: 1,
         filter: true,
+      },
+
+      {
+        headerName: "Domain Code",
+        field: "domainCode",
+        width: 150,
+      },
+
+      {
+        headerName: "Program Type",
+        field: "programType",
+        width: 150,
       },
 
       {

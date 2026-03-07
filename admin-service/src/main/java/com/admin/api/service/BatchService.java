@@ -1,5 +1,6 @@
 package com.admin.api.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +23,10 @@ public interface BatchService {
 	
 	   // ✅ NEW METHOD
     List<Student> getStudentsByBatchId(Long batchId);
+    
+    List<Batch> getRunningBatchesByDate(LocalDate date);
+    
+
+
+
 }

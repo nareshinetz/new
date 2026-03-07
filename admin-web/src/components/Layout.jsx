@@ -306,15 +306,14 @@ const Layout = () => {
                 },
                 "&:hover": { backgroundColor: alpha("#ffffff", 0.1) },
               }}
-              selected={isActive("/students/list")}
-              onClick={() => navigate("/students/list")}
+              selected={isActive("/students/add")}
+              onClick={() => navigate("/students/add")}
             >
               <ListItemIcon sx={{ color: "inherit" }}>
-                <ListIcon />
+                <PersonAdd />
               </ListItemIcon>
-              <ListItemText primary="List Students" />
+              <ListItemText primary="Add Student" />
             </ListItemButton>
-
             <ListItemButton
               sx={{
                 pl: 4,
@@ -324,14 +323,16 @@ const Layout = () => {
                 },
                 "&:hover": { backgroundColor: alpha("#ffffff", 0.1) },
               }}
-              selected={isActive("/students/add")}
-              onClick={() => navigate("/students/add")}
+              selected={isActive("/students/list")}
+              onClick={() => navigate("/students/list")}
             >
               <ListItemIcon sx={{ color: "inherit" }}>
-                <PersonAdd />
+                <ListIcon />
               </ListItemIcon>
-              <ListItemText primary="Add Student" />
+              <ListItemText primary="List Students" />
             </ListItemButton>
+
+            
           </List>
         </Collapse>
 
@@ -353,6 +354,25 @@ const Layout = () => {
 
         <Collapse in={staffOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
+            
+            <ListItemButton
+              sx={{
+                pl: 4,
+                "&.Mui-selected": {
+                  backgroundColor: alpha("#ffffff", 0.2),
+                  "& .MuiListItemIcon-root": { color: "#ffffff" },
+                },
+                "&:hover": { backgroundColor: alpha("#ffffff", 0.1) },
+              }}
+              selected={isActive("/staff/add")}
+              onClick={() => navigate("/staff/add")}
+            >
+              <ListItemIcon sx={{ color: "inherit" }}>
+                <PersonAdd />
+              </ListItemIcon>
+              <ListItemText primary="Add Staff" />
+            </ListItemButton>
+
             <ListItemButton
               sx={{
                 pl: 4,
@@ -371,23 +391,6 @@ const Layout = () => {
               <ListItemText primary="List Staff" />
             </ListItemButton>
 
-            <ListItemButton
-              sx={{
-                pl: 4,
-                "&.Mui-selected": {
-                  backgroundColor: alpha("#ffffff", 0.2),
-                  "& .MuiListItemIcon-root": { color: "#ffffff" },
-                },
-                "&:hover": { backgroundColor: alpha("#ffffff", 0.1) },
-              }}
-              selected={isActive("/staff/add")}
-              onClick={() => navigate("/staff/add")}
-            >
-              <ListItemIcon sx={{ color: "inherit" }}>
-                <PersonAdd />
-              </ListItemIcon>
-              <ListItemText primary="Add Staff" />
-            </ListItemButton>
           </List>
         </Collapse>
 
@@ -458,7 +461,7 @@ const Layout = () => {
             <ListItemIcon sx={{ color: "inherit" }}>
               <SchoolIcon />
             </ListItemIcon>
-            <ListItemText primary="Course Management" />
+            <ListItemText primary="Program Management" />
             {courseOpen ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
         </ListItem>
@@ -480,7 +483,7 @@ const Layout = () => {
               <ListItemIcon sx={{ color: "inherit" }}>
                 <PersonAdd />
               </ListItemIcon>
-              <ListItemText primary="Add Course" />
+              <ListItemText primary="Add Program" />
             </ListItemButton>
 
             <ListItemButton
@@ -498,7 +501,7 @@ const Layout = () => {
               <ListItemIcon sx={{ color: "inherit" }}>
                 <ListIcon />
               </ListItemIcon>
-              <ListItemText primary="Course List" />
+              <ListItemText primary="Programs List" />
             </ListItemButton>
 
 

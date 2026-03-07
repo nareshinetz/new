@@ -1,8 +1,10 @@
 package com.admin.api.model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +18,12 @@ public class BatchRequest {
 
     @NotBlank
     private String status;
+    
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @NotNull
     private LocalTime startTime;
@@ -27,5 +35,6 @@ public class BatchRequest {
 
     @NotEmpty
     private List<Long> staffIds;
-}
 
+	
+}

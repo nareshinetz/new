@@ -1,13 +1,19 @@
 package com.admin.api.entity;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,10 +23,9 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
+import lombok.Data; 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "batch")
 @Data
 public class Batch {
@@ -31,28 +36,46 @@ public class Batch {
 
     @Column(nullable = false)
     private String batchName;
+    
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @Column(nullable = false)
     private String status;
 
-    @JsonFormat(pattern = "HH:mm")
     @Column(nullable = false)
     private LocalTime startTime;
 
-    @JsonFormat(pattern = "HH:mm")
     @Column(nullable = false)
     private LocalTime endTime;
 
     @Column(nullable = false)
     private String roomNumber;
+    
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime modifiedAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "batch_staff", joinColumns = @JoinColumn(name = "batch_id"), inverseJoinColumns = @JoinColumn(name = "staff_id"))
+    @JoinTable(
+        name = "batch_staff",
+        joinColumns = @JoinColumn(name = "batch_id"),
+        inverseJoinColumns = @JoinColumn(name = "staff_id")
+    )
     @JsonManagedReference
     private List<Staff> staffs;
-
+    
+    
     @OneToMany(mappedBy = "batch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Student> students;
+    
+
 
 }

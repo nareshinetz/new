@@ -31,7 +31,7 @@ const BatchList = lazy(() => import("./pages/BatchList"));
 const TransactionHistory = lazy(() => import("./pages/TransactionHistory"));
 const TransactionDetails = lazy(() => import("./pages/ViewTransactions"));
 const ListCourses = lazy(() => import("./pages/ListCourse"));
-const BatchScheduler = lazy(() => import("./pages/BatchScheduler"));
+const BatchSchedule = lazy(() => import("./pages/BatchSchedule.jsx"));
 const ListRole = lazy(() => import("./pages/ListRole"));
 const AddRole = lazy(() => import("./pages/AddRole"));
 const AddUser = lazy(() => import("./pages/AddUser"));
@@ -87,7 +87,7 @@ function App() {
 
               <Route path="/batches/:id/students" element={<BatchStudents />} />
 
-              <Route path="/batch/scheduler" element={<BatchScheduler />} />
+              <Route path="/batch/scheduler" element={<BatchSchedule />} />
 
               <Route path="/roles/add" element={<AddRole />} />
               <Route path="/roles/edit/:id" element={<AddRole />} />

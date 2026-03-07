@@ -387,31 +387,6 @@ const AddStudent = () => {
       >
         <CardContent sx={{ p: { xs: 4, sm: 4, md: 5 } }}>
           <form onSubmit={handleSubmit}>
-            {/* Single Section Header */}
-            {/* <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
-              <Box
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 2,
-                  bgcolor: "primary.50",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <PersonIcon sx={{ color: "primary.main", fontSize: 24 }} />
-              </Box>
-              <Box>
-                <Typography variant="h6" fontWeight={700}>
-                  Student Information
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Fill all fields to complete enrollment
-                </Typography>
-              </Box>
-            </Box> */}
-
             {/* 3-Column Grid Layout */}
             <Grid container spacing={3} sx={{ width: '100%', maxWidth: '100%' }}>
               {/* Column 1: Personal & Basic Info */}

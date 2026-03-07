@@ -4,10 +4,14 @@ import { Navigate } from "react-router-dom";
 const PermissionRoute = ({ children, moduleKey }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
 
-  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-  if (!user?.permissions?.[moduleKey]) {
-    return <Navigate to="/unauthorized" />;
+  const hasPermission = user?.permissions?.[moduleKey];
+
+  if (!hasPermission) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;

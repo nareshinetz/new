@@ -36,6 +36,8 @@ const AddBatch = () => {
   const [formData, setFormData] = useState({
     batchName: "",
     roomNumber: "",
+    startDate: "",
+    endDate : "",
     startTime: "",
     endTime: "",
     status: "ACTIVE",
@@ -69,6 +71,8 @@ const AddBatch = () => {
       setFormData({
         batchName: selectedBatch.batchName || "",
         roomNumber: selectedBatch.roomNumber || "",
+        startDate: selectedBatch.startDate || "",
+        endDate: selectedBatch.endDate || "",    
         startTime: selectedBatch.startTime?.slice(0, 5) || "",
         endTime: selectedBatch.endTime?.slice(0, 5) || "",
         status: selectedBatch.status || "ACTIVE",
@@ -155,6 +159,32 @@ const AddBatch = () => {
                   fullWidth
                   value={formData.roomNumber}
                   onChange={handleChange}
+                />
+              </Grid>
+
+              {/* Start Date */}
+              <Grid item xs={12} md={4} sx={{ width: '30%' }}>
+                <TextField
+                  type="date"
+                  label="Start Date"
+                  name="startDate"
+                  fullWidth
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+
+              {/* End Date */}
+              <Grid item xs={12} md={4} sx={{ width: '30%' }}>
+                <TextField
+                  type="date"
+                  label="endDate"
+                  name="endDate"
+                  fullWidth
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
 

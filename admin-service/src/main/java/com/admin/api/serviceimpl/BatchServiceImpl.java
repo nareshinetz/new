@@ -1,5 +1,6 @@
 package com.admin.api.serviceimpl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,45 +28,59 @@ public class BatchServiceImpl  implements BatchService{
 	@Autowired
 	private ModelMapper modelMapper;
 
-	  @Override
-	    public Batch createBatch(BatchRequest request) {
+	@Override
+	public Batch createBatch(BatchRequest request) {
 
-	        // Staff time conflict check
-	        if (!batchRepository.staffTimeConflict(
-	                request.getStaffIds(),
-	                request.getStartTime(),
-	                request.getEndTime()).isEmpty()) {
-
-	            throw new RuntimeException("Staff not available for this time");
-	        }
-
-	        // Room time conflict check
-	        if (!batchRepository.roomTimeConflict(
-	                request.getRoomNumber(),
-	                request.getStartTime(),
-	                request.getEndTime()).isEmpty()) {
-
-	            throw new RuntimeException("Room not available for this time");
-	        }
-
-	        List<Staff> staffs = staffRepository.findAllById(request.getStaffIds());
-
-	        if (staffs.size() != request.getStaffIds().size()) {
-	            throw new RuntimeException("Invalid staff id");
-	        }
-
-	        Batch batch = new Batch();
-	        batch.setBatchName(request.getBatchName());
-	        batch.setStatus(request.getStatus());
-	        batch.setStartTime(request.getStartTime());
-	        batch.setEndTime(request.getEndTime());
-	        batch.setRoomNumber(request.getRoomNumber());
-	        batch.setStaffs(staffs);
-
-	        return batchRepository.save(batch);
+	    // Validate date
+	    if (request.getEndDate().isBefore(request.getStartDate())) {
+	        throw new RuntimeException("Invalid date range");
 	    }
 
+	    // Validate time
+	    if (request.getEndTime().isBefore(request.getStartTime())) {
+	        throw new RuntimeException("Invalid time range");
+	    }
 
+	    // Staff conflict
+	    if (!batchRepository.staffTimeConflict(
+	            request.getStaffIds(),
+	            request.getStartDate(),
+	            request.getEndDate(),
+	            request.getStartTime(),
+	            request.getEndTime()).isEmpty()) {
+
+	        throw new RuntimeException("Staff not available for this date and time");
+	    }
+
+	    // Room conflict
+	    if (!batchRepository.roomTimeConflict(
+	            request.getRoomNumber(),
+	            request.getStartDate(),
+	            request.getEndDate(),
+	            request.getStartTime(),
+	            request.getEndTime()).isEmpty()) {
+
+	        throw new RuntimeException("Room not available for this date and time");
+	    }
+
+	    List<Staff> staffs = staffRepository.findAllById(request.getStaffIds());
+
+	    if (staffs.size() != request.getStaffIds().size()) {
+	        throw new RuntimeException("Invalid staff id");
+	    }
+
+	    Batch batch = new Batch();
+	    batch.setBatchName(request.getBatchName());
+	    batch.setStatus(request.getStatus());
+	    batch.setStartDate(request.getStartDate());
+	    batch.setEndDate(request.getEndDate());
+	    batch.setStartTime(request.getStartTime());
+	    batch.setEndTime(request.getEndTime());
+	    batch.setRoomNumber(request.getRoomNumber());
+	    batch.setStaffs(staffs);
+
+	    return batchRepository.save(batch);
+	}
 	@Override
 	public Optional<Batch> getBatchById(Long id) {
 		return batchRepository.findById(id);
@@ -111,4 +126,19 @@ public class BatchServiceImpl  implements BatchService{
 
 	        return batch.getStudents(); // 🔥 students list
 	    }
+	   
+	   
+	   @Override
+	   public List<Batch> getRunningBatchesByDate(LocalDate date) {
+
+	       List<Batch> batches = batchRepository.findRunningBatchesByDate(date);
+
+	       if (batches.isEmpty()) {
+	           throw new RuntimeException("No running batches on this date");
+	       }
+
+	       return batches;
+	   }
+	   
+	   
 }

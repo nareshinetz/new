@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -19,7 +19,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-const DownloadDropdown = React.lazy(()=>import( "../generic/DropDown"))
+const DownloadDropdown = React.lazy(() => import("../generic/DropDown"))
 import AddStudent from "./AddStudent";
 
 
@@ -27,12 +27,13 @@ const TransactionHistory = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { transactions = [], loading = false, error = null } =
+  const { transactions = [], totalElements = 0, loading = false, error = null } =
     useSelector((state) => state.transactions || {});
 
+  const [page, setPage] = useState(0);
   useEffect(() => {
-    dispatch(fetchTransactions());
-  }, [dispatch]);
+    dispatch(fetchTransactions({ page: page + 1, size: 10 }));
+  }, [page, dispatch]);
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this transaction?")) {
@@ -49,15 +50,15 @@ const TransactionHistory = () => {
   };
 
   const downloadColumns = useMemo(
-      () => [
-        { header: "Student Id", key: "studentId", width: 25 },
-        { header: "Student Name", key: "studentName", width: 30 },
-        { header: "Payment Date", key: "paymentDate", width: 15 },
-        { header: "Paid Amount", key: "paidAmount", width: 20 },
-        { header: "Payment Mode", key: "paymentMode", width: 20 },
-      ],
-      []
-    );
+    () => [
+      { header: "Student Id", key: "studentId", width: 25 },
+      { header: "Student Name", key: "studentName", width: 30 },
+      { header: "Payment Date", key: "paymentDate", width: 15 },
+      { header: "Paid Amount", key: "paidAmount", width: 20 },
+      { header: "Payment Mode", key: "paymentMode", width: 20 },
+    ],
+    []
+  );
 
   const transactionColumns = useMemo(
     () => [
@@ -88,7 +89,7 @@ const TransactionHistory = () => {
           </Typography>
         ),
       },
-            {
+      {
         headerName: "Payment Date",
         field: "paymentDate",
         sortable: true,
@@ -145,7 +146,7 @@ const TransactionHistory = () => {
   }
 
   return (<>
-    
+
     <Box>
       {/* <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
         Transactions List
@@ -154,32 +155,38 @@ const TransactionHistory = () => {
       <Card>
         <CardContent>
           <Box display="flex" justifyContent="right" mb={2} flexWrap="wrap" gap={3} >
-                      <Suspense fallback={<div>Loading...</div>}>
-                      <DownloadDropdown
-                        data={transactions}
-                        columns={downloadColumns}
-                        fileName="transaction_history"
-                        sheetName="Transaction"
-                        title="TRANSACTION HISTORY REPORT"
-                      />
-                      </Suspense>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => navigate("/payments/add")}
-                      >
-                        Add
-                      </Button>
-                    </Box>
+            <Suspense fallback={<div>Loading...</div>}>
+              <DownloadDropdown
+                data={transactions}
+                columns={downloadColumns}
+                fileName="transaction_history"
+                sheetName="Transaction"
+                title="TRANSACTION HISTORY REPORT"
+              />
+            </Suspense>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/payments/add")}
+            >
+              Add
+            </Button>
+          </Box>
           <AgGridTable
             rowData={transactions || []}
             columnDefs={transactionColumns}
-            loadingMessage="Fetching transactions..."
+            totalRows={totalElements}
+            onPaginationChanged={(params) => {
+              if (params.newPage) {
+                const newPage = params.api.paginationGetCurrentPage();
+                setPage(newPage);
+              }
+            }}
           />
         </CardContent>
       </Card>
     </Box>
-    </>
+  </>
   );
 };
 

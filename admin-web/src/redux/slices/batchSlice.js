@@ -37,6 +37,22 @@ export const fetchBatchById = createAsyncThunk(
   }
 );
 
+export const fetchBatchesByDate = createAsyncThunk(
+  "batches/fetchByDate",
+  async (date, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8082/api/dashboard/batches/${date}`
+      );
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch batches by date"
+      );
+    }
+  }
+);
+
 // 🔹 Allocate Student To Batch
 export const allocateStudentToBatch = createAsyncThunk(
   "batches/allocateStudent",
@@ -163,6 +179,19 @@ const batchSlice = createSlice({
         state.selectedBatch = action.payload;
       })
       .addCase(fetchBatchById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(fetchBatchesByDate.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBatchesByDate.fulfilled, (state, action) => {
+        state.loading = false;
+        state.batches = action.payload || [];
+      })
+      .addCase(fetchBatchesByDate.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

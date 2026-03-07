@@ -1,5 +1,6 @@
 package com.admin.api.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,6 +124,31 @@ public class BatchController {
             );
 
         } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(ex.getMessage(), null, false));
+        }
+    }
+    
+    
+    @GetMapping("/dashboard/batches/{date}")
+    public ResponseEntity<ApiResponse<?>> getBatchDashboard(@PathVariable String date) {
+
+        try {
+
+            LocalDate inputDate = LocalDate.parse(date);
+
+            List<Batch> batches = batchService.getRunningBatchesByDate(inputDate);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(
+                            "Running batches count : " + batches.size(),
+                            batches,
+                            true
+                    )
+            );
+
+        } catch (RuntimeException ex) {
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ApiResponse<>(ex.getMessage(), null, false));
         }
